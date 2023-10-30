@@ -1,0 +1,92 @@
+package testfx;
+import javafx.application.Application;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.event.ActionEvent;
+import java.io.*;
+import java.util.Random;
+
+public class CtaTHREE extends Application {
+
+    private TextArea ta;
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage stage) {
+        stage.setTitle("CTA THREE");
+
+        ta = new TextArea();
+        ta.setWrapText(true);
+
+        MenuBar menuBar = new MenuBar();
+        Menu fileMenu = new Menu("File");
+
+        MenuItem showDateTime = new MenuItem("Show Date/Time");
+        MenuItem saveTolog = new MenuItem("Save to File");
+        MenuItem changeBG = new MenuItem("Change Background Color");
+        MenuItem exitMenu = new MenuItem("Exit");
+
+        fileMenu.getItems().addAll(showDateTime, saveTolog, changeBG, exitMenu);
+        menuBar.getMenus().add(fileMenu);
+
+        showDateTime.setOnAction(this::showDateTime);
+        saveTolog.setOnAction(this::saveToLog);
+        changeBG.setOnAction(this::changeBackgroundColor);
+        exitMenu.setOnAction(this::exitApplication);
+
+        VBox vbox = new VBox(menuBar, ta);
+        Scene scene = new Scene(vbox, 500, 500);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private void showDateTime(ActionEvent event) {
+        
+        String dateTime = "10/29/2023 05:18:00 PM";
+        ta.appendText(dateTime);
+    }
+
+    private void saveToLog(ActionEvent event) {
+        String content = ta.getText();
+        try (PrintWriter writer = new PrintWriter("log.txt")) {
+            writer.print(content);
+            writer.close();
+            showAlert("log.txt saved");
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("could not save");
+        }
+    }
+
+    private void changeBackgroundColor(ActionEvent event) {
+        Random random = new Random();
+        float hue = random.nextFloat();
+        Color color = Color.hsb(hue * 360, 1.0, 1.0);
+        ta.setStyle("-fx-background-color: " + rgbconvert(color) + ";");
+    }
+
+    private void exitApplication(ActionEvent event) {
+        System.exit(0);
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("CTA THREE");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private String rgbconvert(Color color) {
+        return String.format("#%02X%02X%02X",
+                (int) (color.getRed() * 255),
+                (int) (color.getGreen() * 255),
+                (int) (color.getBlue() * 255));
+    }
+}
